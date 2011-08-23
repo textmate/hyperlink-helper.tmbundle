@@ -13,7 +13,7 @@
 		<dict>
 			<key>match</key>
 			<string>(?x)
-				( (https?|s?ftp|ftps|file|smb|afp|nfs|(x-)?man|gopher|txmt)://|mailto:)
+				( (https?|s?ftp|ftps|file|smb|afp|nfs|(x-)?man(-page)?|gopher|txmt)://|mailto:)
 				[-:@a-zA-Z0-9_.,~%+/?=&amp;#]+(?&lt;![.,?:])
 			</string>
 			<key>name</key>
