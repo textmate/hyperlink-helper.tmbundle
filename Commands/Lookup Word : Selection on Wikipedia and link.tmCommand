@@ -14,79 +14,33 @@ require "#{ENV['TM_SUPPORT_PATH']}/lib/ui.rb"
 require 'cgi'
 require 'open-uri'
 require 'erb'
-
-def cap_all_words(string)
-	return string.split(" ").map{|w| w.capitalize}.join(" ")
-end
-
-def follow_redirect(page)
-  pagename = page.match(/var\swgPageName\s\=\s\"(.*?)\";/).to_a[1]
-  url = %{http://en.wikipedia.org/wiki/#{pagename}}
-  content = open(url).read
-  return url, content, pagename
-end #follow_redirect
+require 'rexml/document'
 
 def select_link(links)
-    linklist = links.map { |p| p[0] }
-    item = TextMate::UI.request_item :title =&gt; "Multiple Definitions", :prompt =&gt; "Please select a definition", :items =&gt; linklist
-    TextMate.exit_discard if item.nil?
-    return links[linklist.index(item)]
+  linklist = links.map { |p| p['Text'] }
+  item = TextMate::UI.request_item :title =&gt; "Multiple Definitions", :prompt =&gt; "Please select a definition", :items =&gt; linklist
+  TextMate.exit_discard if item.nil?
+  return links[linklist.index(item)]
 end # select_link
 
-def check_for_search(page)
-  TextMate.exit_show_tool_tip "No definition found" if page.match(/&lt;title&gt;([^&lt;&gt;]*)&lt;\/title&gt;/i).to_a[1].include? "Search"
-  return page
-end # check_for_search
+def getWikiEntries(phrase)
+  res = []
+  response = open("http://en.wikipedia.org/w/api.php?format=xml&amp;action=opensearch&amp;search=#{CGI.escape(phrase)}", "User-Agent" =&gt; "TextMate 2.0")
+  doc = REXML::Document.new(response.read)
 
-def check_for_multiple_results(page,phrase,pagename)
-  if page.match(/(&lt;\/b&gt;\scan\sbe:&lt;\/p&gt;)|(&lt;\/b&gt;\smay\srefer\sto:&lt;\/p&gt;)/i) then
-    open("http://en.wikipedia.org/wiki/Special:Export/#{pagename}") {|body|
-	      links = []
-	      body.read.scan(/\[\[([^|\]]*)[|]?[^\]]*\]\]/) { |link| 
-        links.push(link) }
-       choice = select_link(links)
-       TextMate.exit_discard if choice.nil?
-       TextMate.exit_replace_text(%{&lt;a href="http://en.wikipedia.org/wiki/#{CGI.escape(choice[0]).gsub('+','_')}" title="Wikipedia Entry: #{choice[0]}"&gt;#{phrase}&lt;/a&gt;})        
-        }
+  doc.elements.each('SearchSuggestion/Section/Item') do |item|
+    hash = { }
+    %w[ Text Url Description ].each { |tag| item.elements.each(tag) { |inner| hash[tag] = inner.text } }
+    res &lt;&lt; hash
   end
-end #check_for_multiple_results
-
-def check_for_disambiguation(page,phrase,pagename)
-#  if page.match(/#{phrase}[\s]?\(disambiguation\)/i) then
-  if page.include? "(disambiguation)"
-	    # findlink = page.match(/\"(\/wiki\/#{pagename}_%28disambiguation%29)\"/i) 
-	    # open("http://en.wikipedia.org#{findlink[1]}") {|body|
-		open("http://en.wikipedia.org/wiki/Special:Export/#{pagename}_%28disambiguation%29") {|body|
-	      content = body.read
-	      links = []
-	      content.scan(/\[\[([^|\]]*)[|]?[^\]]*\]\]/) { |link| 
-           links.push(link) }
-       choice = select_link(links)
-       TextMate.exit_discard if choice.nil?
-       TextMate.exit_replace_text(%{&lt;a href="http://en.wikipedia.org/wiki/#{CGI.escape(choice[0]).gsub('+','_')}" title="Wikipedia Entry: #{choice[0]}"&gt;#{phrase}&lt;/a&gt;})        
-        }
-	end
-end #check_for_disambiguation
+  res.sort { |a, b| a['Text'].downcase &lt;=&gt; b['Text'].downcase }
+end
 
 def getWikiDef(phrase)
-  TextMate.call_with_progress(:title =&gt; "Contacting Wikipedia", :message =&gt; "Looking for definition of #{phrase}") do
-    @response = open("http://en.wikipedia.org/wiki/Special:Search?search=#{CGI.escape(phrase)}",
-        "User-Agent" =&gt; "TextMate 1.5.5")
-    content = @response.read
-    if content.scan(/Redirected\sfrom/)
-      url, content, pagename = follow_redirect(content)
-  #    confirmed = TextMate::UI.request_confirmation :button1 =&gt; "Accept", :button2 =&gt; "Cancel", :title =&gt; "Redirected to \"#{pagename}\"", :prompt =&gt; "Accept Redirection?"
-  #    TextMate.exit_discard unless confirmed
-    else
-      url = @response.base_uri
-      pagename = phrase
-    end
-    check_for_search(content)
-    check_for_multiple_results(content,phrase,pagename)
-    check_for_disambiguation(content,phrase,pagename)
-    title = "Wikipedia Entry: " + pagename.gsub(/_/, ' ')
-    return url, title, phrase
-  end
+  entries = getWikiEntries(phrase)
+  TextMate.exit_show_tool_tip "No definition found" if entries.empty?
+  entry = entries.size &gt; 1 ? select_link(entries) : entries.first
+  return entry['Url'], "Wikipedia Entry: #{entry['Text']}", phrase
 end
 
 url, title, input = getWikiDef(STDIN.read)
