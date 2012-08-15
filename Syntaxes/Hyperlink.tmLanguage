@@ -17,7 +17,7 @@
 				[-:@a-zA-Z0-9_.,~%+/?=&amp;#]+(?&lt;![.,?:])
 			</string>
 			<key>name</key>
-			<string>markup.underline.link.hyperlink</string>
+			<string>markup.underline.link.$2.hyperlink</string>
 		</dict>
 	</array>
 	<key>scopeName</key>
