@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/System/Library/Frameworks/Ruby.framework/Versions/Current/usr/bin/ruby -wKU
+require "#{ENV['TM_SUPPORT_PATH']}/lib/escape"
+
+abort "The TM_ISSUE_URL variable is unset for this project.\n\nThis needs to be set to a URL template (using %s) that translates the issue link to one that works in a browser." unless ENV.has_key? 'TM_ISSUE_URL'
+
+link = STDIN.read
+if link =~ %r{issue://(.+)}
+  url = ENV['TM_ISSUE_URL'] % $1
+  %x{ /usr/bin/open #{e_sh url} }
+else
+  abort "Not an issue link: ‘#{link}’"
+end
+</string>
+	<key>fallbackInput</key>
+	<string>scope</string>
+	<key>hideFromUser</key>
+	<string>1</string>
+	<key>input</key>
+	<string>selection</string>
+	<key>inputFormat</key>
+	<string>text</string>
+	<key>keyEquivalent</key>
+	<string></string>
+	<key>name</key>
+	<string>Open Issue Link</string>
+	<key>outputCaret</key>
+	<string>afterOutput</string>
+	<key>outputFormat</key>
+	<string>text</string>
+	<key>outputLocation</key>
+	<string>discard</string>
+	<key>scope</key>
+	<string>markup.underline.link.issue</string>
+	<key>uuid</key>
+	<string>D01C6CD1-A0CF-46AF-AB0E-DF8C5CAB1B36</string>
+	<key>version</key>
+	<integer>2</integer>
+</dict>
+</plist>
