@@ -13,8 +13,8 @@
 		<dict>
 			<key>match</key>
 			<string>(?x)
-				( (https?|s?ftp|ftps|file|smb|afp|nfs|(x-)?man(-page)?|gopher|txmt|issue)://|mailto:)
-				[-:@a-zA-Z0-9_.,~%+/?=&amp;#]+(?&lt;![-.,?:#])
+				( (https?|s?ftp|ftps|file|smb|afp|nfs|(x-)?man(-page)?|gopher|txmt)://|mailto:)
+				[-:@a-zA-Z0-9_.,~%+/?=&amp;#;]+(?&lt;![-.,?:#;])
 			</string>
 			<key>name</key>
 			<string>markup.underline.link.$2.hyperlink</string>
