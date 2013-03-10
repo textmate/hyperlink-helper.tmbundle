@@ -37,7 +37,7 @@ end
 	<key>outputLocation</key>
 	<string>discard</string>
 	<key>scope</key>
-	<string>markup.underline.link.issue</string>
+	<string>L:markup.underline.link.issue | R:markup.underline.link.issue</string>
 	<key>uuid</key>
 	<string>D01C6CD1-A0CF-46AF-AB0E-DF8C5CAB1B36</string>
 	<key>version</key>
