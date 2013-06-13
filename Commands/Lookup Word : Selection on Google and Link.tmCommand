@@ -14,6 +14,7 @@
 # newlines, spaces and capitalization differences
 require ENV['TM_SUPPORT_PATH'] + '/lib/progress.rb'
 require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
+require ENV['TM_SUPPORT_PATH'] + '/lib/exit_codes.rb'
 require 'net/http' 
 require 'open-uri'
 require 'erb'
@@ -22,6 +23,7 @@ def getLinkWithTitle(phrase)
   TextMate.call_with_progress(:title =&gt; "Contacting Google", :message =&gt; "Retrieving Link for “#{phrase}”…") do
     response = Net::HTTP.get_response(URI.parse(URI.escape("http://www.google.com/search?q=#{phrase}&amp;btnI=I'm+Feeling+Lucky")))
     url = response.to_hash['location'].to_a.first
+    return nil, nil, phrase if url.nil?
     fp = open(url)
     title = fp.read.match(/&lt;title&gt;([^&lt;&gt;]*)&lt;\/title&gt;/i).to_a[1]
     title = title.strip
@@ -30,7 +32,9 @@ def getLinkWithTitle(phrase)
 end
 
 url, title, input = getLinkWithTitle(STDIN.read)
-print ERB.new(ENV['TM_LINK_FORMAT']).result</string>
+TextMate.exit_show_tool_tip("No results found for “#{input}”.") if url.nil?
+print ERB.new(ENV['TM_LINK_FORMAT']).result
+</string>
 	<key>fallbackInput</key>
 	<string>word</string>
 	<key>input</key>
