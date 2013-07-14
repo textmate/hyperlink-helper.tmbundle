@@ -19,6 +19,12 @@
 			<key>name</key>
 			<string>markup.underline.link.$2.hyperlink</string>
 		</dict>
+		<dict>
+			<key>match</key>
+			<string>(?i)\bRFC(?: |(?&lt;= RFC))(\d+)\b</string>
+			<key>name</key>
+			<string>markup.underline.link.rfc.$1.hyperlink</string>
+		</dict>
 	</array>
 	<key>scopeName</key>
 	<string>text.hyperlink</string>

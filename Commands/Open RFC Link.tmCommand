@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/bin/ruby -wKU
+require "shellwords"
+
+link = STDIN.read
+if link =~ /RFC\s*(\d+)/i
+  url = "http://tools.ietf.org/html/rfc#$1"
+  %x{ /usr/bin/open #{url.shellescape} }
+else
+  abort "Not an RFC link: ‘#{link}’"
+end
+</string>
+	<key>fallbackInput</key>
+	<string>scope</string>
+	<key>hideFromUser</key>
+	<string>1</string>
+	<key>input</key>
+	<string>selection</string>
+	<key>inputFormat</key>
+	<string>text</string>
+	<key>keyEquivalent</key>
+	<string></string>
+	<key>name</key>
+	<string>Open RFC Link</string>
+	<key>outputCaret</key>
+	<string>afterOutput</string>
+	<key>outputFormat</key>
+	<string>text</string>
+	<key>outputLocation</key>
+	<string>discard</string>
+	<key>scope</key>
+	<string>L:markup.underline.link.rfc | R:markup.underline.link.rfc</string>
+	<key>uuid</key>
+	<string>9F14EDF0-E031-4FAB-A379-B9717B35786E</string>
+	<key>version</key>
+	<integer>2</integer>
+</dict>
+</plist>
