@@ -1,4 +1,4 @@
-#/usr/local/bin/ruby
+#!/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/bin/ruby
 
 ##
 # Ruby API for Yahoo! Search Web Services
