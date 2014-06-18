@@ -5,7 +5,7 @@
 	<key>beforeRunningCommand</key>
 	<string>nop</string>
 	<key>command</key>
-	<string>#!/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/bin/ruby -wKU
+	<string>#!/usr/bin/env ruby18 -wKU
 require "#{ENV['TM_SUPPORT_PATH']}/lib/escape"
 
 abort "The TM_ISSUE_URL variable is unset for this project.\n\nThis needs to be set to a URL template (using %s) that translates the issue link to one that works in a browser." unless ENV.has_key? 'TM_ISSUE_URL'
