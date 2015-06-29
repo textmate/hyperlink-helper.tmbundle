@@ -5,7 +5,7 @@
 	<key>fileTypes</key>
 	<array/>
 	<key>injectionSelector</key>
-	<string>text, string, comment</string>
+	<string>text, string -string.regexp, comment</string>
 	<key>name</key>
 	<string>Hyperlink</string>
 	<key>patterns</key>
