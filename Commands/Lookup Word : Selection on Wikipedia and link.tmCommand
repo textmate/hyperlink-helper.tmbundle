@@ -25,7 +25,7 @@ end # select_link
 
 def getWikiEntries(phrase)
   res = []
-  response = open("http://en.wikipedia.org/w/api.php?format=xml&amp;action=opensearch&amp;search=#{CGI.escape(phrase)}", "User-Agent" =&gt; "TextMate 2.0")
+  response = open("https://en.wikipedia.org/w/api.php?format=xml&amp;action=opensearch&amp;search=#{CGI.escape(phrase)}", "User-Agent" =&gt; "TextMate 2.0")
   doc = REXML::Document.new(response.read)
 
   doc.elements.each('SearchSuggestion/Section/Item') do |item|
