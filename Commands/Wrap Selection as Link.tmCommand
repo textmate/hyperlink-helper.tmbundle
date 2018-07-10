@@ -36,7 +36,7 @@ end
 
 url = make_link %x{pbpaste}.strip
 
-if url =~ /^http:\/\// and url != 'http://example.com/'
+if url =~ /^https?:\/\// and url != 'http://example.com/'
   eval 'title = fp.read.match(/&lt;title&gt;([^&lt;&gt;]*)&lt;\/title&gt;/i).to_a[1].strip rescue nil' if fp = open(url) rescue nil
 end
 
@@ -47,15 +47,23 @@ print ERB.new(ENV['TM_LINK_FORMAT']).result
 	<string>word</string>
 	<key>input</key>
 	<string>selection</string>
+	<key>inputFormat</key>
+	<string>text</string>
 	<key>keyEquivalent</key>
 	<string>^L</string>
 	<key>name</key>
 	<string>Wrap Word / Selection as Link</string>
-	<key>output</key>
-	<string>insertAsSnippet</string>
+	<key>outputCaret</key>
+	<string>afterOutput</string>
+	<key>outputFormat</key>
+	<string>snippet</string>
+	<key>outputLocation</key>
+	<string>replaceInput</string>
 	<key>scope</key>
 	<string>text</string>
 	<key>uuid</key>
 	<string>A42DC78E-6588-476F-8A00-40B8CCC6D2E0</string>
+	<key>version</key>
+	<integer>2</integer>
 </dict>
 </plist>
