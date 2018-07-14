@@ -5,11 +5,13 @@
 	<key>beforeRunningCommand</key>
 	<string>nop</string>
 	<key>command</key>
-	<string>#!/usr/bin/env ruby18 -wKU
+	<string>#!/usr/bin/env ruby20
+
 require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
 require 'erb'
 require 'open-uri'
 require 'net/http' 
+require 'timeout'
 
 def entity_escape(text)
   text.gsub(/&amp;(?!([a-zA-Z0-9]+|#[0-9]+|#x[0-9a-fA-F]+);)/, '&amp;amp;')
@@ -17,17 +19,17 @@ end
 
 def make_link(text)
   case text
-  when %r{\A(mailto:)?(.*?@.*\..*)\z}:
+  when %r{\A(mailto:)?(.*?@.*\..*)\z}
     "mailto:#{$2.gsub(/./) {sprintf("&amp;#x%02X;", $&amp;.unpack("U")[0])}}"
-  when %r{http://www.(amazon.(?:com|co.uk|co.jp|ca|fr|de))/.+?/([A-Z0-9]{10})/[-a-zA-Z0-9_./%?=&amp;]+}:
+  when %r{http://www.(amazon.(?:com|co.uk|co.jp|ca|fr|de))/.+?/([A-Z0-9]{10})/[-a-zA-Z0-9_./%?=&amp;]+}
     "http://#{$1}/dp/#{$2}"
-  when %r{\A[a-zA-Z][a-zA-Z0-9.+-]*://.*\z}:
+  when %r{\A[a-zA-Z][a-zA-Z0-9.+-]*://.*\z}
     entity_escape(text)
-  when %r{\A(www\..*|.*\.(com|uk|net|org|info))\z}:
+  when %r{\A(www\..*|.*\.(com|uk|net|org|info))\z}
     "http://#{entity_escape text}"
-  when %r{\A.*\.(com|uk|net|org|info)\z}:
+  when %r{\A.*\.(com|uk|net|org|info)\z}
     "http://#{entity_escape text}"
-  when %r{\A\S+\z}:
+  when %r{\A\S+\z}
     entity_escape(text)
   else
     "http://example.com/"
@@ -36,8 +38,17 @@ end
 
 url = make_link %x{pbpaste}.strip
 
+title = nil
+
 if url =~ /^https?:\/\// and url != 'http://example.com/'
-  eval 'title = fp.read.match(/&lt;title&gt;([^&lt;&gt;]*)&lt;\/title&gt;/i).to_a[1].strip rescue nil' if fp = open(url) rescue nil
+  begin
+    Timeout.timeout(4) do
+      fp = open(url) rescue nil
+      title = fp.read.match(/&lt;title&gt;([^&lt;&gt;]*)&lt;\/title&gt;/i).to_a[1].strip rescue nil
+    end
+  rescue Timeout::Error
+    # Error out on large downloads or during slow network access
+  end
 end
 
 input = STDIN.read
