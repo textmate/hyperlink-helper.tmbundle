@@ -21,7 +21,7 @@
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>(?i)\bRFC(?: |(?&lt;= RFC))(\d+)\b</string>
+			<string>(?i)\bRFC(?: |(?&lt;=^RFC)|(?&lt;= RFC))(\d+)\b</string>
 			<key>name</key>
 			<string>markup.underline.link.rfc.$1.hyperlink</string>
 		</dict>
